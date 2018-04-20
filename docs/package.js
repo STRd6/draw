@@ -204,7 +204,7 @@
     },
     "pixie.cson": {
       "path": "pixie.cson",
-      "content": "dependencies:\n  cornerstone: \"distri/cornerstone:master\"\n",
+      "content": "dependencies:\n  cornerstone: \"distri/cornerstone:master\"\npublish:\n  s3:\n    basePath: \"public/danielx.net\"\n",
       "mode": "100644"
     }
   },
@@ -216,7 +216,7 @@
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"dependencies\":{\"cornerstone\":\"distri/cornerstone:master\"}};",
+      "content": "module.exports = {\"dependencies\":{\"cornerstone\":\"distri/cornerstone:master\"},\"publish\":{\"s3\":{\"basePath\":\"public/danielx.net\"}}};",
       "type": "blob"
     }
   },
@@ -226,6 +226,11 @@
   "config": {
     "dependencies": {
       "cornerstone": "distri/cornerstone:master"
+    },
+    "publish": {
+      "s3": {
+        "basePath": "public/danielx.net"
+      }
     }
   },
   "entryPoint": "main",
