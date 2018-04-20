@@ -59,7 +59,6 @@ drawImage = ->
     return canvas
 
 generateMask = (width, height, t=0, canvas) ->
-  debugger
   canvas ?= createCanvas(width, height)
   context = canvas.getContext('2d')
 
