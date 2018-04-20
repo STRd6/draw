@@ -34,32 +34,41 @@ loadImage = ->
     tmpContext = tmpCanvas.getContext('2d')
     maskCanvas = generateMask(width, height)
 
-    context.drawImage(img, 0, 0)
+    # Draw with mask
+    tmpContext.globalCompositeOperation = "source-over"
+    tmpContext.clearRect(0, 0, width, height)
+    tmpContext.drawImage(maskCanvas, 0, 0)
+    tmpContext.globalCompositeOperation = "source-in"
+    tmpContext.drawImage(img, 0, 0)
 
-    transform = Matrix.scale(0.95, 0.95, Point(width/2, height/2))
-    applyTransform(context, transform)
+    canvas.draw = (t) ->
+      context.resetTransform()
+      context.globalCompositeOperation = "source-over"
+      context.drawImage(img, 0, 0)
 
-    context.globalAlpha = 0.27
-    # context.globalCompositeOperation = "hard-light"
+      # context.globalCompositeOperation = "hard-light"
 
-    [0..10].forEach ->
-      # Draw with mask
-      tmpContext.globalCompositeOperation = "source-over"
-      tmpContext.clearRect(0, 0, width, height)
-      tmpContext.drawImage(maskCanvas, 0, 0)
-      tmpContext.globalCompositeOperation = "source-in"
-      tmpContext.drawImage(canvas, 0, 0)
+      steps = 5
+      steps.times (n) ->
+        ratio = 1 - (n + t) / steps
 
-      context.drawImage(tmpCanvas, 0, 0)
+        if n is 0
+          context.globalAlpha = t
+        else
+          context.globalAlpha = 1
 
-      # draw without mask
-      # context.drawImage(canvas, 0, 0)
-      return
+        transform = Matrix.scale(ratio, ratio, Point(width/2, height/2))
+        applyTransform(context, transform)
+
+        context.drawImage(tmpCanvas, 0, 0)
+  
+        # draw without mask
+        # context.drawImage(canvas, 0, 0)
+        return
 
     return canvas
 
-# TODO: Animated mask doesn't work without animating scaling offsets to match
-generateMask = (width, height, t=0, canvas) ->
+generateMask = (width, height, canvas) ->
   canvas ?= createCanvas(width, height)
   context = canvas.getContext('2d')
 
@@ -73,12 +82,9 @@ generateMask = (width, height, t=0, canvas) ->
   context.fillStyle = "black"
   steps = 20
   steps.times (n) ->
-    if n is steps - 1
-      context.globalAlpha = 0.0625 * t
-    else
-      context.globalAlpha = 0.0625
+    context.globalAlpha = 0.0625
     context.beginPath()
-    context.arc(0, 0, (n + 1 - t) * 0.5 / steps, 0, Math.TAU)
+    context.arc(0, 0, n * 0.5 / steps, 0, Math.TAU)
     context.closePath()
     context.fill()
 
@@ -95,15 +101,13 @@ loadImage().then (canvas) ->
 
   t = 0
   dt = 1/60
-  animCanvas = createCanvas(960, 540)
-  document.body.appendChild animCanvas
-  animateMask = ->
-    window.requestAnimationFrame animateMask
+  animate = ->
+    window.requestAnimationFrame animate
 
-    generateMask(960, 540, t, animCanvas)
+    canvas.draw(t)
 
     t += dt
     if t >= 1
       t = 0
 
-  window.requestAnimationFrame animateMask
+  window.requestAnimationFrame animate
