@@ -20,7 +20,7 @@ createCanvas = (width, height) ->
   return canvas
 
 applyTransform = (context, t) ->
-  context.transform(t.a, t.b, t.c, t.d, t.tx, t.ty)
+  context.setTransform(t.a, t.b, t.c, t.d, t.tx, t.ty)
 
 drawImage = ->
   imageFromURL("https://danielx.whimsy.space/cdn/images/sky.jpg")
@@ -37,7 +37,6 @@ drawImage = ->
     context.drawImage(img, 0, 0)
 
     transform = Matrix.scale(0.95, 0.95, Point(width/2, height/2))
-    console.log transform
     applyTransform(context, transform)
 
     context.globalAlpha = 0.27
@@ -55,28 +54,54 @@ drawImage = ->
 
       # draw without mask
       # context.drawImage(canvas, 0, 0)
+      return
 
     return canvas
 
-generateMask = (width, height) ->
-  canvas = createCanvas(width, height)
+generateMask = (width, height, t=0, canvas) ->
+  debugger
+  canvas ?= createCanvas(width, height)
   context = canvas.getContext('2d')
 
   # Clear
   context.clearRect(0, 0, width, height)
 
   transform = Matrix.translate(width/2, height/2).scale(width, height)
-  console.log transform
+
   applyTransform context, transform
   context.globalAlpha = 0.0625
 
-  steps = 50
-  [0...steps].forEach (n) ->
-    context.arc(0, 0, (n + 1) * 0.5 / steps, 0, Math.TAU)
-    context.fillStyle = "black"
+  context.fillStyle = "black"
+  steps = 20
+  steps.times (n) ->
+    context.beginPath()
+    context.arc(0, 0, (n + 1 - t) * 0.5 / steps, 0, Math.TAU)
+    context.closePath()
     context.fill()
+
+    return
+
+  # Restore
+  context.globalAlpha = 1
+  context.resetTransform()
 
   return canvas
 
 drawImage().then (canvas) ->
   document.body.appendChild canvas
+
+do ->
+  t = 0
+  dt = 1/60
+  animCanvas = createCanvas(960, 540)
+  document.body.appendChild animCanvas
+  animateMask = ->
+    window.requestAnimationFrame animateMask
+
+    generateMask(960, 540, t, animCanvas)
+
+    t += dt
+    if t >= 1
+      t = 0
+
+  window.requestAnimationFrame animateMask
