@@ -1,2 +1,5 @@
 dependencies:
   cornerstone: "distri/cornerstone:master"
+publish:
+  s3:
+    basePath: "public/danielx.net"
