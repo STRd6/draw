@@ -22,7 +22,7 @@ createCanvas = (width, height) ->
 applyTransform = (context, t) ->
   context.setTransform(t.a, t.b, t.c, t.d, t.tx, t.ty)
 
-drawImage = ->
+loadImage = ->
   imageFromURL("https://danielx.whimsy.space/cdn/images/sky.jpg")
   .then (img) ->
     {width, height} = img
@@ -58,6 +58,7 @@ drawImage = ->
 
     return canvas
 
+# TODO: Animated mask doesn't work without animating scaling offsets to match
 generateMask = (width, height, t=0, canvas) ->
   canvas ?= createCanvas(width, height)
   context = canvas.getContext('2d')
@@ -68,11 +69,14 @@ generateMask = (width, height, t=0, canvas) ->
   transform = Matrix.translate(width/2, height/2).scale(width, height)
 
   applyTransform context, transform
-  context.globalAlpha = 0.0625
 
   context.fillStyle = "black"
   steps = 20
   steps.times (n) ->
+    if n is steps - 1
+      context.globalAlpha = 0.0625 * t
+    else
+      context.globalAlpha = 0.0625
     context.beginPath()
     context.arc(0, 0, (n + 1 - t) * 0.5 / steps, 0, Math.TAU)
     context.closePath()
@@ -86,10 +90,9 @@ generateMask = (width, height, t=0, canvas) ->
 
   return canvas
 
-drawImage().then (canvas) ->
+loadImage().then (canvas) ->
   document.body.appendChild canvas
 
-do ->
   t = 0
   dt = 1/60
   animCanvas = createCanvas(960, 540)
