@@ -1,7 +1,18 @@
 require "cornerstone"
 
+style = document.createElement "style"
+style.textContent = require "./style"
+document.head.appendChild style
+
 draw = (img) ->
   context.drawImage(img, 0, 0)
+
+eventToLocal = (element, event) ->
+  {left, top} = element.getBoundingClientRect()
+  {clientX, clientY} = event
+
+  x: clientX - left
+  y: clientY - top
 
 imageFromURL = (url) ->
   new Promise (resolve, reject) ->
@@ -16,7 +27,7 @@ createCanvas = (width, height) ->
   canvas = document.createElement 'canvas'
   canvas.width = width
   canvas.height = height
-  
+
   return canvas
 
 applyTransform = (context, t) ->
@@ -29,6 +40,17 @@ loadImage = ->
 
     canvas = createCanvas(width, height)
     context = canvas.getContext('2d')
+
+    targetPoint = Point(width/2, height/2)
+
+    -> # Add movement listener
+      document.addEventListener "mousemove", (e) ->
+        {x, y} = eventToLocal(canvas, e)
+  
+        targetPoint.x = x
+        targetPoint.y = y
+  
+        return
 
     tmpCanvas = createCanvas(width, height)
     tmpContext = tmpCanvas.getContext('2d')
@@ -57,11 +79,11 @@ loadImage = ->
         else
           context.globalAlpha = 1
 
-        transform = Matrix.scale(ratio, ratio, Point(width/2, height/2))
+        transform = Matrix.scale(ratio, ratio, targetPoint)
         applyTransform(context, transform)
 
         context.drawImage(tmpCanvas, 0, 0)
-  
+
         # draw without mask
         # context.drawImage(canvas, 0, 0)
         return
