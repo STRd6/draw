@@ -26,7 +26,7 @@
     },
     "style.styl": {
       "path": "style.styl",
-      "content": "body, html\n  height: 100%\n\nbody\n  display: flex\n  margin: 0\n\n  > canvas\n    margin: auto\n",
+      "content": "body, html\n  height: 100%\n\nbody\n  display: flex\n  margin: 0\n\n  > canvas\n    margin: auto\n    width: 100vw /* Maintain aspect ratio, yet scale to fill https://stackoverflow.com/questions/20590239/ */\n    height: 56.25vw /* height:width ratio = 9/16 = .5625  */\n    max-height: 100vh\n    max-width: 177.78vh /* 16/9 = 1.778 */\n",
       "mode": "100644"
     }
   },
@@ -43,7 +43,7 @@
     },
     "style": {
       "path": "style",
-      "content": "module.exports = \"body,\\nhtml {\\n  height: 100%;\\n}\\nbody {\\n  display: flex;\\n  margin: 0;\\n}\\nbody > canvas {\\n  margin: auto;\\n}\\n\";",
+      "content": "module.exports = \"body,\\nhtml {\\n  height: 100%;\\n}\\nbody {\\n  display: flex;\\n  margin: 0;\\n}\\nbody > canvas {\\n  margin: auto;\\n  width: 100vw /* Maintain aspect ratio, yet scale to fill https://stackoverflow.com/questions/20590239/ */;\\n  height: 56.25vw /* height:width ratio = 9/16 = .5625  */;\\n  max-height: 100vh;\\n  max-width: 177.78vh /* 16/9 = 1.778 */;\\n}\\n\";",
       "type": "blob"
     }
   },
