@@ -66,12 +66,13 @@ loadImage = ->
     canvas.draw = (t) ->
       context.resetTransform()
       context.globalCompositeOperation = "source-over"
-      context.drawImage(img, 0, 0)
+      context.filter = "none"
 
-      # context.globalCompositeOperation = "hard-light"
+      context.drawImage(img, 0, 0)
 
       steps = 5
       steps.times (n) ->
+        context.filter = ""
         ratio = 1 - (n + t) / steps
 
         if n is 0
@@ -82,6 +83,8 @@ loadImage = ->
         transform = Matrix.scale(ratio, ratio, targetPoint)
         applyTransform(context, transform)
 
+        context.filter = "hue-rotate(#{ratio * 360}deg)"
+        # context.globalCompositeOperation = "hard-light"
         context.drawImage(tmpCanvas, 0, 0)
 
         # draw without mask
@@ -126,10 +129,10 @@ loadImage().then (canvas) ->
   animate = ->
     window.requestAnimationFrame animate
 
-    canvas.draw(t)
-
     t += dt
     if t >= 1
       t = 0
+
+    canvas.draw(t)
 
   window.requestAnimationFrame animate
