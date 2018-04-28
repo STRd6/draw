@@ -46,10 +46,10 @@ loadImage = ->
     -> # Add movement listener
       document.addEventListener "mousemove", (e) ->
         {x, y} = eventToLocal(canvas, e)
-  
+
         targetPoint.x = x
         targetPoint.y = y
-  
+
         return
 
     tmpCanvas = createCanvas(width, height)
@@ -70,7 +70,7 @@ loadImage = ->
 
       context.drawImage(img, 0, 0)
 
-      steps = 5
+      steps = 6
       steps.times (n) ->
         context.filter = ""
         ratio = 1 - (n + t) / steps
@@ -83,7 +83,7 @@ loadImage = ->
         transform = Matrix.scale(ratio, ratio, targetPoint)
         applyTransform(context, transform)
 
-        context.filter = "hue-rotate(#{ratio * 360}deg)"
+        context.filter = "hue-rotate(#{90 - ratio * 360}deg)"
         # context.globalCompositeOperation = "hard-light"
         context.drawImage(tmpCanvas, 0, 0)
 
