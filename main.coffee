@@ -33,15 +33,18 @@ createCanvas = (width, height) ->
 applyTransform = (context, t) ->
   context.setTransform(t.a, t.b, t.c, t.d, t.tx, t.ty)
 
+# sourceImaeg = "https://danielx.whimsy.space/cdn/images/xp.jpg"
+sourceImage = "https://danielx.whimsy.space/whimsy.space/V2E01/space.png"
+
 loadImage = ->
-  imageFromURL("https://danielx.whimsy.space/cdn/images/sky.jpg")
+  imageFromURL(sourceImage)
   .then (img) ->
     {width, height} = img
 
     canvas = createCanvas(width, height)
     context = canvas.getContext('2d')
 
-    targetPoint = Point(width/2, height/2)
+    targetPoint = Point(width * 0.5, height * 0.5)
 
     -> # Add movement listener
       document.addEventListener "mousemove", (e) ->
@@ -70,20 +73,20 @@ loadImage = ->
 
       context.drawImage(img, 0, 0)
 
-      steps = 6
+      steps = 12
       steps.times (n) ->
         context.filter = ""
         ratio = 1 - (n + t) / steps
 
         if n is 0
-          context.globalAlpha = t
+          context.globalAlpha = t * 0.5
         else
-          context.globalAlpha = 1
+          context.globalAlpha = 0.5
 
-        transform = Matrix.scale(ratio, ratio, targetPoint)
+        transform = Matrix.scale(ratio, ratio, targetPoint).rotate(-(1 - Math.sin(Math.TAU * ratio)) / 36 * Math.TAU, targetPoint)
         applyTransform(context, transform)
 
-        context.filter = "hue-rotate(#{90 - ratio * 360}deg)"
+        # context.filter = "hue-rotate(#{90 - ratio * 360}deg)"
         # context.globalCompositeOperation = "hard-light"
         context.drawImage(tmpCanvas, 0, 0)
 
